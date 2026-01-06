@@ -35,7 +35,7 @@ import {
   materials,
   sampleOverviews,
   solutionsReflections,
-} from "./data/mockData";
+} from "../data/mockData";
 
 const COLORS = {
   primary: ["#5A5F63", "#6B7A79", "#7A8B8A", "#9FA5A9"],
