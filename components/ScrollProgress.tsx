@@ -1,10 +1,12 @@
+"use client";
 import { useEffect, useState } from "react";
 
 const sections = [
   { id: "hero", label: "Вступ" },
-  { id: "block-1", label: "Блок 1" },
-  { id: "block-2", label: "Блок 2" },
-  { id: "block-3", label: "Блок 3" },
+  { id: "block-general", label: "Загальні" },
+  { id: "block-fractions", label: "Фракції" },
+  { id: "block-materials", label: "Матеріали" },
+  { id: "block-voting", label: "Рефлексії" },
 ];
 
 export function ScrollProgress() {
@@ -37,18 +39,35 @@ export function ScrollProgress() {
               .getElementById(section.id)
               ?.scrollIntoView({ behavior: "smooth" });
           }}
-          className="group flex items-center gap-2"
+          className="group flex flex-row-reverse items-center gap-2"
         >
-          <span className="text-[10px] text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-wider font-mono">
-            {section.label}
-          </span>
+          {/* Indicator – fixed column */}
           <div
-            className={`w-1 h-1 transition-all ${
+            className={`h-1 transition-all ${
               activeSection === section.id
-                ? "bg-foreground w-6 h-1"
-                : "bg-muted hover:bg-muted-foreground"
+                ? "bg-foreground w-6"
+                : "bg-muted w-1 group-hover:bg-muted-foreground"
             }`}
           />
+
+          {/* Label – right-aligned, grows left */}
+          <span
+            className="
+            w-40
+            text-right
+            text-[10px]
+            text-muted-foreground
+            opacity-0
+            group-hover:opacity-100
+            transition-opacity
+            uppercase
+            tracking-wider
+            font-mono
+            whitespace-nowrap
+          "
+          >
+            {section.label}
+          </span>
         </button>
       ))}
     </div>

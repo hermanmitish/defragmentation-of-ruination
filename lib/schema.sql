@@ -47,8 +47,10 @@ create table public.general_params (
   name text not null,
   codename text not null,
   total_original_weight numeric not null check (total_original_weight >= 0),
+  total_processed_weight numeric null,
   created_by uuid not null references public.profiles(id),
   created_at timestamptz not null default now()
+  group text null default 'Group 1'
 );
 
 -- photos for general params (store paths, not blobs)
