@@ -34,6 +34,11 @@ export default function HeaderBar({
   selectedGroup: string;
 }) {
   const router = useRouter();
+  const avatar =
+    user?.user_metadata?.avatar_url ||
+    user?.user_metadata?.picture ||
+    user?.identities?.[0]?.identity_data?.avatar_url ||
+    user?.identities?.[0]?.identity_data?.picture;
   // console.log({ selectedGroup, selectedGpId, generalList });
   return (
     <header className="sticky top-0 z-50 bg-card border-b border-border">
@@ -108,6 +113,23 @@ export default function HeaderBar({
             <Calendar className="w-3 h-3" />
             <span>{new Date().toLocaleDateString("uk-UA")}</span>
           </div>
+          {!!user && (
+            <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-mono uppercase tracking-wider">
+              <span>{user?.user_metadata?.full_name}</span>
+              {avatar && (
+                <img
+                  src={avatar}
+                  alt="User Avatar"
+                  className="w-4 h-4 rounded-full object-cover border border-border"
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src =
+                      "/default-avatar.png";
+                  }}
+                />
+              )}
+            </div>
+          )}
           {!user ? (
             <button
               className="flex items-center gap-2 px-3 py-1.5 border border-border text-xs hover:bg-muted"
