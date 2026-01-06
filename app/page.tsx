@@ -16,8 +16,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar, Download } from "lucide-react";
-import { useMemo, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { User } from "@supabase/supabase-js";
+import { Calendar, LogIn, LogOut } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -53,6 +55,35 @@ const COLORS = {
 };
 
 export default function App() {
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<{
+    id: string;
+    name: string;
+    role: string;
+    group: string;
+    approved_at: string;
+  } | null>(null);
+  useEffect(() => {
+    const supabase = createClient();
+
+    (async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+      if (user && !profile) {
+        const { data: profile, error } = await supabase
+          .from("profiles")
+          .select("id, name, role, group, approved_at")
+          .eq("id", user.id)
+          .single();
+        setProfile(profile);
+      } else if (!user) {
+        setProfile(null);
+      }
+    })();
+  }, []);
+
   const [selectedSample, setSelectedSample] = useState("S001");
   const [selectedGroup, setSelectedGroup] = useState<"A" | "B" | "C" | "all">(
     "all"
@@ -225,10 +256,35 @@ export default function App() {
                 <Calendar className="w-3 h-3" />
                 <span>{new Date().toLocaleDateString("uk-UA")}</span>
               </div>
-              <button className="flex items-center gap-2 px-3 py-1.5 border border-border text-xs hover:bg-muted transition-colors uppercase tracking-wide font-mono">
-                <Download className="w-3 h-3" />
-                Експорт
-              </button>
+              {!user && (
+                <button
+                  onClick={() => {
+                    const supabase = createClient();
+                    supabase.auth.signInWithOAuth({
+                      provider: "google",
+                      options: {
+                        redirectTo: `${window.location.origin}/defragmentation/auth/oauth?next=/defragmentation`,
+                      },
+                    });
+                  }}
+                  className="flex items-center gap-2 px-3 py-1.5 border border-border text-xs hover:bg-muted transition-colors uppercase tracking-wide font-mono"
+                >
+                  <LogIn className="w-3 h-3" />
+                  Увійти
+                </button>
+              )}
+              {!!user && (
+                <button
+                  onClick={() => {
+                    const supabase = createClient();
+                    supabase.auth.signOut();
+                  }}
+                  className="flex items-center gap-2 px-3 py-1.5 border border-border text-xs hover:bg-muted transition-colors uppercase tracking-wide font-mono"
+                >
+                  <LogOut className="w-3 h-3" />
+                  Вийти
+                </button>
+              )}
             </div>
           </div>
         </div>

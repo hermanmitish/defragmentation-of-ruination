@@ -47,22 +47,6 @@ export const sampleOverviews: SampleOverview[] = [
     total_weight_post_wash_g: 2180,
     photo_url: 'https://images.unsplash.com/photo-1601583170734-f8e31d7d6250?w=800'
   },
-  {
-    sample_id: 'S002',
-    analysis_date: '2025-12-16',
-    group: 'B',
-    total_weight_pre_wash_g: 3200,
-    total_weight_post_wash_g: 2950,
-    photo_url: 'https://images.unsplash.com/photo-1599909533879-d0e4b6e2e3c3?w=800'
-  },
-  {
-    sample_id: 'S003',
-    analysis_date: '2025-12-18',
-    group: 'C',
-    total_weight_pre_wash_g: 1890,
-    total_weight_post_wash_g: 1720,
-    photo_url: 'https://images.unsplash.com/photo-1621604458098-2ec8a3b4f3d1?w=800'
-  }
 ];
 
 export const fractions: Fraction[] = [
@@ -71,16 +55,6 @@ export const fractions: Fraction[] = [
   { sample_id: 'S001', fraction_label: '5-10mm', weight_g: 890, reuse_potential_score: 0.75, reuse_category: 'Високий' },
   { sample_id: 'S001', fraction_label: '1-5mm', weight_g: 420, reuse_potential_score: 0.45, reuse_category: 'Середній' },
   { sample_id: 'S001', fraction_label: '<1mm', weight_g: 150, reuse_potential_score: 0.2, reuse_category: 'Низький' },
-  // S002
-  { sample_id: 'S002', fraction_label: '10-20mm', weight_g: 980, reuse_potential_score: 0.9, reuse_category: 'Високий' },
-  { sample_id: 'S002', fraction_label: '5-10mm', weight_g: 1150, reuse_potential_score: 0.8, reuse_category: 'Високий' },
-  { sample_id: 'S002', fraction_label: '1-5mm', weight_g: 620, reuse_potential_score: 0.5, reuse_category: 'Середній' },
-  { sample_id: 'S002', fraction_label: '<1mm', weight_g: 200, reuse_potential_score: 0.25, reuse_category: 'Низький' },
-  // S003
-  { sample_id: 'S003', fraction_label: '10-20mm', weight_g: 580, reuse_potential_score: 0.8, reuse_category: 'Високий' },
-  { sample_id: 'S003', fraction_label: '5-10mm', weight_g: 720, reuse_potential_score: 0.7, reuse_category: 'Високий' },
-  { sample_id: 'S003', fraction_label: '1-5mm', weight_g: 310, reuse_potential_score: 0.4, reuse_category: 'Середній' },
-  { sample_id: 'S003', fraction_label: '<1mm', weight_g: 110, reuse_potential_score: 0.15, reuse_category: 'Низький' }
 ];
 
 export const materials: Material[] = [
@@ -91,18 +65,6 @@ export const materials: Material[] = [
   { sample_id: 'S001', material_type: 'метал', weight_g: 85, photo_url_small: 'https://images.unsplash.com/photo-1590859808308-3d2d9c515b1a?w=200', color_class: 'темний', risk_level: 'невідомий', decision: 'відкладено' },
   { sample_id: 'S001', material_type: 'кераміка', weight_g: 45, photo_url_small: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=200', color_class: 'світлий', risk_level: 'низький', decision: 'придатний' },
   { sample_id: 'S001', material_type: 'некласифікована', weight_g: 30, photo_url_small: 'https://images.unsplash.com/photo-1604869515882-4d10fa4b0492?w=200', color_class: 'змішаний', risk_level: 'потенційно ризиковий', decision: 'непридатний' },
-  // S002
-  { sample_id: 'S002', material_type: 'бетон', weight_g: 1350, photo_url_small: 'https://images.unsplash.com/photo-1611348524140-53c9a25263d6?w=200', color_class: 'сірий', risk_level: 'низький', decision: 'придатний' },
-  { sample_id: 'S002', material_type: 'цегла', weight_g: 950, photo_url_small: 'https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?w=200', color_class: 'червоний', risk_level: 'низький', decision: 'придатний' },
-  { sample_id: 'S002', material_type: 'природний камінь', weight_g: 480, photo_url_small: 'https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=200', color_class: 'світлий', risk_level: 'низький', decision: 'придатний' },
-  { sample_id: 'S002', material_type: 'кераміка', weight_g: 120, photo_url_small: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=200', color_class: 'змішаний', risk_level: 'низький', decision: 'придатний' },
-  { sample_id: 'S002', material_type: 'метал', weight_g: 50, photo_url_small: 'https://images.unsplash.com/photo-1590859808308-3d2d9c515b1a?w=200', color_class: 'темний', risk_level: 'невідомий', decision: 'відкладено' },
-  // S003
-  { sample_id: 'S003', material_type: 'цегла', weight_g: 820, photo_url_small: 'https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?w=200', color_class: 'червоний', risk_level: 'низький', decision: 'придатний' },
-  { sample_id: 'S003', material_type: 'бетон', weight_g: 650, photo_url_small: 'https://images.unsplash.com/photo-1611348524140-53c9a25263d6?w=200', color_class: 'сірий', risk_level: 'низький', decision: 'придатний' },
-  { sample_id: 'S003', material_type: 'природний камінь', weight_g: 180, photo_url_small: 'https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=200', color_class: 'змішаний', risk_level: 'низький', decision: 'придатний' },
-  { sample_id: 'S003', material_type: 'кераміка', weight_g: 55, photo_url_small: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=200', color_class: 'світлий', risk_level: 'низький', decision: 'придатний' },
-  { sample_id: 'S003', material_type: 'некласифікована', weight_g: 15, photo_url_small: 'https://images.unsplash.com/photo-1604869515882-4d10fa4b0492?w=200', color_class: 'змішаний', risk_level: 'потенційно ризиковий', decision: 'непридатний' }
 ];
 
 export const solutionsReflections: SolutionReflection[] = [
@@ -115,7 +77,7 @@ export const solutionsReflections: SolutionReflection[] = [
     is_anonymous: true
   },
   {
-    sample_id: 'S002',
+    sample_id: 'S001',
     solution_type: 'mosaic',
     photo_url: 'https://images.unsplash.com/photo-1582582621959-48d27397dc69?w=400',
     reflection_emotions: 'Надія через творчість, перетворення руїн на щось нове',
@@ -123,7 +85,7 @@ export const solutionsReflections: SolutionReflection[] = [
     is_anonymous: true
   },
   {
-    sample_id: 'S003',
+    sample_id: 'S001',
     solution_type: 'filler',
     photo_url: 'https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?w=400',
     reflection_emotions: 'Сум за втраченим, але й бажання зберегти хоч щось',
