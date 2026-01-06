@@ -67,9 +67,7 @@ export default function BlockVoting({
       </div>
 
       {!user ? (
-        <div className="border border-border bg-card p-6 text-sm text-muted-foreground">
-          Увійдіть, щоб додавати голоси/ідеї/фідбек.
-        </div>
+        <></>
       ) : (
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="border border-border bg-card p-5">
@@ -245,13 +243,15 @@ export default function BlockVoting({
                     {votesAll?.filter((v) => v.chosen_form === a.value)
                       ?.length || 0}
                   </div>
-                  <div>
-                    Голосів в вашій групі:{" "}
-                    {votesAll
-                      ?.filter((v) => v.chosen_form === a.value)
-                      ?.filter((v) => v.profiles?.group === profile?.group)
-                      .length || 0}
-                  </div>
+                  {!!user && (
+                    <div>
+                      Голосів в вашій групі:{" "}
+                      {votesAll
+                        ?.filter((v) => v.chosen_form === a.value)
+                        ?.filter((v) => v.profiles?.group === profile?.group)
+                        .length || 0}
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="text-xs text-center text-foreground font-mono uppercase tracking-wide">
