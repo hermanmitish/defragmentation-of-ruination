@@ -92,6 +92,7 @@ export default function MaterialsClient({
     () => Array.from(new Set(materials.map((m) => m.color))),
     [materials]
   );
+  const [hovered, setHovered] = useState<number | null>(null);
 
   return (
     <div className="space-y-6">
@@ -183,7 +184,10 @@ export default function MaterialsClient({
                 <Fragment key={m.id}>
                   <tr
                     key={m.id}
-                    className="border-t border-border hover:bg-secondary peer"
+                    className="border-t border-border data-[hover=true]:bg-secondary"
+                    onPointerOver={() => setHovered(m.id)}
+                    onPointerLeave={() => setHovered(null)}
+                    data-hover={hovered === m.id}
                   >
                     <td className="p-3">{m.material_name}</td>
                     <td className="p-3">{m.codename}</td>
@@ -271,9 +275,12 @@ export default function MaterialsClient({
                   {m.description?.trim?.() && (
                     <tr
                       key={`${m.id}-desc`}
-                      className="border-border/50 hover:bg-secondary peer-hover:bg-secondary"
+                      className="border-border/50 data-[hover=true]:bg-secondary"
+                      onPointerOver={() => setHovered(m.id)}
+                      onPointerLeave={() => setHovered(null)}
+                      data-hover={hovered === m.id}
                     >
-                      <td colSpan={5} className="px-3 pb-3 pt-0">
+                      <td colSpan={6} className="px-3 pb-3 pt-0">
                         <div className="text-xs text-muted-foreground bg-muted/10 p-2 border">
                           {m.description?.trim?.() ? (
                             <span className="whitespace-pre-wrap">

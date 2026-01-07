@@ -2,6 +2,7 @@
 "use client";
 
 import { updateFraction } from "@/app/actions";
+import { fractionTypes } from "@/app/static-data";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -62,13 +63,17 @@ export default function UpdateFractionDialog({
             }
           }}
         >
-          <input
+          <select
             name="fraction_type"
-            className="w-full border border-border p-2"
-            placeholder="Fraction type"
+            className="w-full border border-border p-2 text-sm"
             defaultValue={fraction.fraction_type}
-            required
-          />
+          >
+            {fractionTypes.map((c) => (
+              <option key={c.value} value={c.value}>
+                {c.label}
+              </option>
+            ))}
+          </select>
           <input
             name="codename"
             className="w-full border border-border p-2"
@@ -109,9 +114,9 @@ export default function UpdateFractionDialog({
               variant="ghost"
               onClick={() => setOpen(false)}
             >
-              Cancel
+              Відмінити
             </Button>
-            <Button type="submit">Save</Button>
+            <Button type="submit">Зберегти</Button>
           </div>
         </form>
       </DialogContent>

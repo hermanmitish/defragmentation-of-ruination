@@ -2,6 +2,7 @@
 "use client";
 
 import { updateMaterial } from "@/app/actions";
+import { colorOptions } from "@/app/static-data";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -87,13 +88,17 @@ export default function UpdateMaterialDialog({
             defaultValue={material.weight}
             required
           />
-          <input
+          <select
             name="color"
             className="w-full border border-border p-2"
-            placeholder="Color"
             defaultValue={material.color}
-            required
-          />
+          >
+            {colorOptions.map((c) => (
+              <option key={c.value} value={c.value}>
+                Колір: {c.value}
+              </option>
+            ))}
+          </select>
 
           <label className="flex items-center gap-2 text-sm">
             <input
@@ -116,9 +121,9 @@ export default function UpdateMaterialDialog({
               variant="ghost"
               onClick={() => setOpen(false)}
             >
-              Cancel
+              Відмінити
             </Button>
-            <Button type="submit">Save</Button>
+            <Button type="submit">Зберегти</Button>
           </div>
         </form>
       </DialogContent>

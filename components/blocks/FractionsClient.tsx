@@ -82,6 +82,7 @@ export default function FractionsClient({
       })),
     [fractions, total]
   );
+  const [hovered, setHovered] = useState<number | null>(null);
 
   return (
     <div className="space-y-6">
@@ -185,7 +186,10 @@ export default function FractionsClient({
                   <Fragment key={f.id}>
                     <tr
                       key={f.id}
-                      className="border-t border-border hover:bg-secondary"
+                      className="border-t border-border data-[hover=true]:bg-secondary"
+                      onPointerOver={() => setHovered(f.id)}
+                      onPointerLeave={() => setHovered(null)}
+                      data-hover={hovered === f.id}
                     >
                       <td className="p-3">{f.fraction_type}</td>
                       <td className="p-3">{f.codename}</td>
@@ -271,7 +275,13 @@ export default function FractionsClient({
                     </tr>
                     {/* Description sub-row */}
                     {f.description?.trim?.() && (
-                      <tr key={`${f.id}-desc`} className="border-border/50">
+                      <tr
+                        key={`${f.id}-desc`}
+                        className="border-border/50 data-[hover=true]:bg-secondary"
+                        onPointerOver={() => setHovered(f.id)}
+                        onPointerLeave={() => setHovered(null)}
+                        data-hover={hovered === f.id}
+                      >
                         <td colSpan={5} className="px-3 pb-3 pt-0">
                           <div className="text-xs text-muted-foreground bg-muted/10 p-2 border">
                             {f.description?.trim?.() ? (
