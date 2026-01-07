@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { addMaterial } from "@/app/actions";
-import { colorOptions } from "@/app/static-data";
+import { updateMaterial } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,12 +10,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Pencil } from "lucide-react";
 import { useState } from "react";
 
-export default function AddMaterialDialog({
-  generalParamsId,
+export default function UpdateMaterialDialog({
+  material,
 }: {
-  generalParamsId: number;
+  material: {
+    id: number;
+    material_name: string;
+    codename: string;
+    weight: number;
+    color: string;
+    can_be_reused: boolean;
+    description?: string;
+  };
 }) {
   const [open, setOpen] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -23,12 +32,14 @@ export default function AddMaterialDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Додайте матеріал</Button>
+        <Button variant="outline" size="icon" type="button" className="ml-2">
+          <Pencil className="w-4 h-4" />
+        </Button>
       </DialogTrigger>
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Додайте матеріал</DialogTitle>
+          <DialogTitle>Редагувати матеріал</DialogTitle>
         </DialogHeader>
 
         {err && <div className="text-sm text-red-600">{err}</div>}
@@ -38,17 +49,16 @@ export default function AddMaterialDialog({
           action={async (fd) => {
             setErr(null);
             try {
-              await addMaterial({
-                general_params_id: generalParamsId,
+              await updateMaterial({
+                id: material.id,
                 material_name: String(fd.get("material_name") || ""),
                 codename: String(fd.get("codename") || ""),
                 weight: Number(fd.get("weight") || 0),
-                color: String(fd.get("color") || colorOptions[0].value),
+                color: String(fd.get("color") || ""),
                 can_be_reused: fd.get("can_be_reused") === "on",
                 description: String(fd.get("description") || ""),
               });
               setOpen(false);
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (e: any) {
               setErr(e?.message ?? "Failed");
             }
@@ -56,47 +66,48 @@ export default function AddMaterialDialog({
         >
           <input
             name="material_name"
-            placeholder="Назва матеріалу"
             className="w-full border border-border p-2"
+            placeholder="Material name"
+            defaultValue={material.material_name}
             required
           />
           <input
             name="codename"
-            placeholder="Код"
             className="w-full border border-border p-2"
+            placeholder="Codename"
+            defaultValue={material.codename}
             required
           />
           <input
             name="weight"
             type="number"
             step="0.01"
-            placeholder="Вага (г)"
             className="w-full border border-border p-2"
+            placeholder="Weight"
+            defaultValue={material.weight}
+            required
+          />
+          <input
+            name="color"
+            className="w-full border border-border p-2"
+            placeholder="Color"
+            defaultValue={material.color}
             required
           />
 
-          <select
-            name="color"
-            className="w-full border border-border p-2"
-            defaultValue={colorOptions[0].value}
-          >
-            {colorOptions.map((c) => (
-              <option key={c.value} value={c.value}>
-                Колір: {c.value}
-              </option>
-            ))}
-          </select>
-          <div className="px-2 py-2.5 border">
-            <label className="flex items-center gap-2 text-sm">
-              <input name="can_be_reused" type="checkbox" className="h-4 w-4" />
-              Підлягає перевикористанню?
-            </label>
-          </div>
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              name="can_be_reused"
+              defaultChecked={material.can_be_reused}
+            />
+            Can be reused
+          </label>
           <textarea
             name="description"
             className="w-full border border-border p-2"
             placeholder="Детальний опис"
-            defaultValue={""}
+            defaultValue={material.description}
           />
 
           <div className="flex justify-end gap-2">
@@ -105,9 +116,9 @@ export default function AddMaterialDialog({
               variant="ghost"
               onClick={() => setOpen(false)}
             >
-              Відмінити
+              Cancel
             </Button>
-            <Button type="submit">Зберегти</Button>
+            <Button type="submit">Save</Button>
           </div>
         </form>
       </DialogContent>

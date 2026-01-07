@@ -71,6 +71,7 @@ create table public.fractions (
   reuse_potential integer not null check (reuse_potential between 0 and 100),
   created_by uuid not null references public.profiles(id),
   created_at timestamptz not null default now()
+  description text null
 );
 
 create table public.fraction_photos (
@@ -90,6 +91,7 @@ create table public.materials (
   can_be_reused boolean not null default false,
   created_by uuid not null references public.profiles(id),
   created_at timestamptz not null default now()
+  description text null
 );
 
 create table public.material_photos (

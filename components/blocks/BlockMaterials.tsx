@@ -14,6 +14,7 @@ type Material = {
   weight: number;
   color: string;
   can_be_reused: boolean;
+  description?: string;
   material_photos?: MaterialPhoto[];
 };
 

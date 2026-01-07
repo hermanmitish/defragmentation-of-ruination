@@ -63,6 +63,7 @@ export async function addMaterial(input: {
   weight: number;
   color: string; // your enum
   can_be_reused: boolean;
+  description?: string;
 }) {
   const supabase = await createClient();
   const {
@@ -78,6 +79,7 @@ export async function addMaterial(input: {
     color: input.color,
     can_be_reused: input.can_be_reused,
     created_by: user?.id,
+    description: input.description,
   });
 
   if (error) throw new Error(error.message);
@@ -110,6 +112,7 @@ export async function addFraction(form: {
   codename: string;
   amount_weight: number;
   reuse_potential: number;
+  description?: string;
 }) {
   const supabase = await createClient();
   const {
@@ -399,6 +402,66 @@ export async function updateGeneralParams(input: {
       total_original_weight: input.total_original_weight,
       group: input.group,
       total_processed_weight: input.total_processed_weight,
+    })
+    .eq("id", input.id);
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/");
+}
+
+export async function updateFraction(input: {
+  id: number;
+  fraction_type: string;
+  codename: string;
+  amount_weight: number;
+  reuse_potential: number;
+  description?: string;
+}) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  const { error } = await supabase
+    .from("fractions")
+    .update({
+      fraction_type: input.fraction_type,
+      codename: input.codename,
+      amount_weight: input.amount_weight,
+      reuse_potential: input.reuse_potential,
+      description: input.description,
+    })
+    .eq("id", input.id);
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/");
+}
+
+export async function updateMaterial(input: {
+  id: number;
+  material_name: string;
+  codename: string;
+  weight: number;
+  color: string;
+  can_be_reused: boolean;
+  description?: string;
+}) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  const { error } = await supabase
+    .from("materials")
+    .update({
+      material_name: input.material_name,
+      codename: input.codename,
+      weight: input.weight,
+      color: input.color,
+      can_be_reused: input.can_be_reused,
+      description: input.description,
     })
     .eq("id", input.id);
 

@@ -6,7 +6,7 @@ import { deleteMaterial, deleteMaterialPhoto } from "@/app/actions";
 import { ChartCard } from "@/components/ChartCard";
 import { User } from "@supabase/supabase-js";
 import { Delete, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -20,6 +20,7 @@ import {
   YAxis,
 } from "recharts";
 import AddMaterialPhotoDialog from "../dialogs/AddMaterialPhotoDialog";
+import UpdateMaterialDialog from "../dialogs/UpdateMaterialDialog";
 import { Button } from "../ui/button";
 
 type MaterialPhoto = { id: string; storage_path: string; url: string };
@@ -30,6 +31,7 @@ type Material = {
   weight: number;
   color: string;
   can_be_reused: boolean;
+  description?: string;
   material_photos?: MaterialPhoto[];
 };
 
@@ -80,7 +82,7 @@ export default function MaterialsClient({
       [...filtered]
         .sort((a, b) => Number(b.weight) - Number(a.weight))
         .map((m) => ({
-          name: m.codename || m.material_name,
+          name: m.material_name || m.codename,
           weight: Number(m.weight || 0),
         })),
     [filtered]
@@ -148,7 +150,7 @@ export default function MaterialsClient({
             <BarChart data={barData} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis type="number" />
-              <YAxis type="category" dataKey="name" width={120} />
+              <YAxis type="category" dataKey="name" fontSize={8} width={80} />
               <Tooltip />
               <Bar dataKey="weight" radius={[0, 8, 8, 0]} />
             </BarChart>
@@ -178,22 +180,38 @@ export default function MaterialsClient({
             </thead>
             <tbody>
               {filtered.map((m) => (
-                <tr
-                  key={m.id}
-                  className="border-t border-border hover:bg-secondary"
-                >
-                  <td className="p-3">{m.material_name}</td>
-                  <td className="p-3">{m.codename}</td>
-                  <td className="p-3 text-muted-foreground">{m.weight}</td>
-                  <td className="p-3 text-muted-foreground">{m.color}</td>
-                  <td className="p-3 text-muted-foreground">
-                    {m.can_be_reused ? "Так" : "Ні"}
-                  </td>
-                  <td className="p-3 text-right flex items-end justify-end">
-                    {(() => {
-                      const photo = m.material_photos?.[0]; // treat the first as “the one”
-                      if (!user && !photo) return null;
-                      if (!user && photo) {
+                <Fragment key={m.id}>
+                  <tr
+                    key={m.id}
+                    className="border-t border-border hover:bg-secondary peer"
+                  >
+                    <td className="p-3">{m.material_name}</td>
+                    <td className="p-3">{m.codename}</td>
+                    <td className="p-3 text-muted-foreground">{m.weight}</td>
+                    <td className="p-3 text-muted-foreground">{m.color}</td>
+                    <td className="p-3 text-muted-foreground">
+                      {m.can_be_reused ? "Так" : "Ні"}
+                    </td>
+                    <td className="p-3 text-right flex items-end justify-end ">
+                      {(() => {
+                        const photo = m.material_photos?.[0]; // treat the first as “the one”
+                        if (!user && !photo) return null;
+                        if (!user && photo) {
+                          return (
+                            <div className="inline-flex items-center gap-2">
+                              <img
+                                src={photo.url}
+                                alt="fraction photo"
+                                className="w-10 h-10 object-cover border border-border rounded"
+                              />
+                            </div>
+                          );
+                        }
+
+                        if (!photo) {
+                          return <AddMaterialPhotoDialog materialId={m.id} />;
+                        }
+
                         return (
                           <div className="inline-flex items-center gap-2">
                             <img
@@ -201,56 +219,74 @@ export default function MaterialsClient({
                               alt="fraction photo"
                               className="w-10 h-10 object-cover border border-border rounded"
                             />
+
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                if (!confirm("Delete this photo?")) return;
+                                await deleteMaterialPhoto({
+                                  material_photo_id: photo.id,
+                                  storage_path: photo.storage_path,
+                                });
+                              }}
+                              className="w-4 h-4 -ml-3 -mt-10 inline-flex items-center justify-center rounded border border-border bg-primary-foreground hover:bg-red-50 hover:border-red-300"
+                              aria-label="Delete fraction photo"
+                              title="Delete"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
                           </div>
                         );
-                      }
-
-                      if (!photo) {
-                        return <AddMaterialPhotoDialog materialId={m.id} />;
-                      }
-
-                      return (
-                        <div className="inline-flex items-center gap-2">
-                          <img
-                            src={photo.url}
-                            alt="fraction photo"
-                            className="w-10 h-10 object-cover border border-border rounded"
-                          />
-
-                          <button
-                            type="button"
-                            onClick={async () => {
-                              if (!confirm("Delete this photo?")) return;
-                              await deleteMaterialPhoto({
-                                material_photo_id: photo.id,
-                                storage_path: photo.storage_path,
-                              });
+                      })()}
+                      {!!user && (
+                        <>
+                          <UpdateMaterialDialog
+                            material={{
+                              id: m.id,
+                              material_name: m.material_name,
+                              codename: m.codename,
+                              weight: m.weight,
+                              color: m.color,
+                              can_be_reused: m.can_be_reused,
+                              description: m.description,
                             }}
-                            className="w-4 h-4 -ml-3 -mt-10 inline-flex items-center justify-center rounded border border-border bg-primary-foreground hover:bg-red-50 hover:border-red-300"
-                            aria-label="Delete fraction photo"
-                            title="Delete"
+                          />
+                          <Button
+                            variant={"outline"}
+                            type="button"
+                            size={"icon"}
+                            className="ml-2"
+                            onClick={async () => {
+                              if (!confirm("Видалити матеріал?")) return;
+                              await deleteMaterial(m.id);
+                            }}
                           >
-                            <X className="w-4 h-4" />
-                          </button>
+                            <Delete />
+                          </Button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                  {/* Description sub-row */}
+                  {m.description?.trim?.() && (
+                    <tr
+                      key={`${m.id}-desc`}
+                      className="border-border/50 hover:bg-secondary peer-hover:bg-secondary"
+                    >
+                      <td colSpan={5} className="px-3 pb-3 pt-0">
+                        <div className="text-xs text-muted-foreground bg-muted/10 p-2 border">
+                          {m.description?.trim?.() ? (
+                            <span className="whitespace-pre-wrap">
+                              {m.description}
+                            </span>
+                          ) : (
+                            <span className="italic">—</span>
+                          )}
                         </div>
-                      );
-                    })()}
-                    {!!user && (
-                      <Button
-                        variant={"outline"}
-                        type="button"
-                        size={"icon"}
-                        className="ml-2"
-                        onClick={async () => {
-                          if (!confirm("Видалити матеріал?")) return;
-                          await deleteMaterial(m.id);
-                        }}
-                      >
-                        <Delete />
-                      </Button>
-                    )}
-                  </td>
-                </tr>
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
               ))}
             </tbody>
           </table>

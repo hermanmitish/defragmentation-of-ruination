@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { addMaterial } from "@/app/actions";
-import { colorOptions } from "@/app/static-data";
+import { updateFraction } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,12 +10,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Pencil } from "lucide-react";
 import { useState } from "react";
 
-export default function AddMaterialDialog({
-  generalParamsId,
+export default function UpdateFractionDialog({
+  fraction,
 }: {
-  generalParamsId: number;
+  fraction: {
+    id: number;
+    fraction_type: string;
+    codename: string;
+    amount_weight: number;
+    reuse_potential: number;
+    description?: string;
+  };
 }) {
   const [open, setOpen] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -23,12 +31,14 @@ export default function AddMaterialDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Додайте матеріал</Button>
+        <Button variant="outline" size="icon" type="button" className="ml-2">
+          <Pencil className="w-4 h-4" />
+        </Button>
       </DialogTrigger>
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Додайте матеріал</DialogTitle>
+          <DialogTitle>Редагувати фракцію</DialogTitle>
         </DialogHeader>
 
         {err && <div className="text-sm text-red-600">{err}</div>}
@@ -38,65 +48,59 @@ export default function AddMaterialDialog({
           action={async (fd) => {
             setErr(null);
             try {
-              await addMaterial({
-                general_params_id: generalParamsId,
-                material_name: String(fd.get("material_name") || ""),
+              await updateFraction({
+                id: fraction.id,
+                fraction_type: String(fd.get("fraction_type") || ""),
                 codename: String(fd.get("codename") || ""),
-                weight: Number(fd.get("weight") || 0),
-                color: String(fd.get("color") || colorOptions[0].value),
-                can_be_reused: fd.get("can_be_reused") === "on",
+                amount_weight: Number(fd.get("amount_weight") || 0),
+                reuse_potential: Number(fd.get("reuse_potential") || 0),
                 description: String(fd.get("description") || ""),
               });
               setOpen(false);
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (e: any) {
               setErr(e?.message ?? "Failed");
             }
           }}
         >
           <input
-            name="material_name"
-            placeholder="Назва матеріалу"
+            name="fraction_type"
             className="w-full border border-border p-2"
+            placeholder="Fraction type"
+            defaultValue={fraction.fraction_type}
             required
           />
           <input
             name="codename"
-            placeholder="Код"
             className="w-full border border-border p-2"
+            placeholder="Codename"
+            defaultValue={fraction.codename}
             required
           />
           <input
-            name="weight"
+            name="amount_weight"
             type="number"
             step="0.01"
-            placeholder="Вага (г)"
             className="w-full border border-border p-2"
+            placeholder="Amount / weight"
+            defaultValue={fraction.amount_weight}
             required
           />
-
-          <select
-            name="color"
+          <input
+            name="reuse_potential"
+            type="number"
+            step="0.01"
+            min="0"
+            max="100"
             className="w-full border border-border p-2"
-            defaultValue={colorOptions[0].value}
-          >
-            {colorOptions.map((c) => (
-              <option key={c.value} value={c.value}>
-                Колір: {c.value}
-              </option>
-            ))}
-          </select>
-          <div className="px-2 py-2.5 border">
-            <label className="flex items-center gap-2 text-sm">
-              <input name="can_be_reused" type="checkbox" className="h-4 w-4" />
-              Підлягає перевикористанню?
-            </label>
-          </div>
+            placeholder="Reuse potential (0..1)"
+            defaultValue={fraction.reuse_potential}
+            required
+          />
           <textarea
             name="description"
             className="w-full border border-border p-2"
             placeholder="Детальний опис"
-            defaultValue={""}
+            defaultValue={fraction.description}
           />
 
           <div className="flex justify-end gap-2">
@@ -105,9 +109,9 @@ export default function AddMaterialDialog({
               variant="ghost"
               onClick={() => setOpen(false)}
             >
-              Відмінити
+              Cancel
             </Button>
-            <Button type="submit">Зберегти</Button>
+            <Button type="submit">Save</Button>
           </div>
         </form>
       </DialogContent>

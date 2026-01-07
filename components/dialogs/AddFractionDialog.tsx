@@ -39,6 +39,7 @@ export default function AddFractionDialog({
               codename: String(fd.get("codename")),
               amount_weight: Number(fd.get("amount_weight")),
               reuse_potential: Number(fd.get("reuse_potential")),
+              description: String(fd.get("description") || ""),
             });
             setOpen(false);
           }}
@@ -76,6 +77,12 @@ export default function AddFractionDialog({
             placeholder="Круговий потенціал (0-100)"
             className="w-full border p-2"
             required
+          />
+          <textarea
+            name="description"
+            className="w-full border border-border p-2"
+            placeholder="Детальний опис"
+            defaultValue={""}
           />
 
           <div className="flex justify-end gap-2">

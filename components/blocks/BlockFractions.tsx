@@ -13,6 +13,7 @@ type Fraction = {
   amount_weight: number;
   reuse_potential: number;
   created_at: string;
+  description?: string;
   fraction_photos?: {
     id: number;
     storage_path: string;

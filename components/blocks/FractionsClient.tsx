@@ -7,7 +7,7 @@ import AddFractionPhotoDialog from "@/components/dialogs/AddFractionPhotoDialog"
 import { Button } from "@/components/ui/button";
 import { User } from "@supabase/supabase-js";
 import { Delete, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -20,6 +20,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import UpdateFractionDialog from "../dialogs/UpdateFractionDialog";
 
 type Fraction = {
   id: number;
@@ -27,6 +28,7 @@ type Fraction = {
   codename: string;
   amount_weight: number;
   reuse_potential: number;
+  description?: string;
   fraction_photos?: {
     id: number;
     storage_path: string;
@@ -180,23 +182,39 @@ export default function FractionsClient({
               </thead>
               <tbody>
                 {fractions.map((f) => (
-                  <tr
-                    key={f.id}
-                    className="border-t border-border hover:bg-secondary"
-                  >
-                    <td className="p-3">{f.fraction_type}</td>
-                    <td className="p-3">{f.codename}</td>
-                    <td className="p-3 text-muted-foreground">
-                      {f.amount_weight}
-                    </td>
-                    <td className="p-3 text-muted-foreground">
-                      {f.reuse_potential}
-                    </td>
-                    <td className="p-3 text-right flex items-end justify-end">
-                      {(() => {
-                        const photo = f.fraction_photos?.[0]; // treat the first as “the one”
-                        if (!user && !photo) return null;
-                        if (!user && photo) {
+                  <Fragment key={f.id}>
+                    <tr
+                      key={f.id}
+                      className="border-t border-border hover:bg-secondary"
+                    >
+                      <td className="p-3">{f.fraction_type}</td>
+                      <td className="p-3">{f.codename}</td>
+                      <td className="p-3 text-muted-foreground">
+                        {f.amount_weight}
+                      </td>
+                      <td className="p-3 text-muted-foreground">
+                        {f.reuse_potential}
+                      </td>
+                      <td className="p-3 text-right flex items-end justify-end">
+                        {(() => {
+                          const photo = f.fraction_photos?.[0]; // treat the first as “the one”
+                          if (!user && !photo) return null;
+                          if (!user && photo) {
+                            return (
+                              <div className="inline-flex items-center gap-2">
+                                <img
+                                  src={photo.url}
+                                  alt="fraction photo"
+                                  className="w-10 h-10 object-cover border border-border rounded"
+                                />
+                              </div>
+                            );
+                          }
+
+                          if (!photo) {
+                            return <AddFractionPhotoDialog fractionId={f.id} />;
+                          }
+
                           return (
                             <div className="inline-flex items-center gap-2">
                               <img
@@ -204,56 +222,70 @@ export default function FractionsClient({
                                 alt="fraction photo"
                                 className="w-10 h-10 object-cover border border-border rounded"
                               />
+
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  if (!confirm("Delete this photo?")) return;
+                                  await deleteFractionPhoto({
+                                    fraction_photo_id: photo.id,
+                                    storage_path: photo.storage_path,
+                                  });
+                                }}
+                                className="w-4 h-4 -ml-3 -mt-10 inline-flex items-center justify-center rounded border border-border bg-primary-foreground hover:bg-red-50 hover:border-red-300"
+                                aria-label="Delete fraction photo"
+                                title="Delete"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
                             </div>
                           );
-                        }
-
-                        if (!photo) {
-                          return <AddFractionPhotoDialog fractionId={f.id} />;
-                        }
-
-                        return (
-                          <div className="inline-flex items-center gap-2">
-                            <img
-                              src={photo.url}
-                              alt="fraction photo"
-                              className="w-10 h-10 object-cover border border-border rounded"
-                            />
-
-                            <button
-                              type="button"
-                              onClick={async () => {
-                                if (!confirm("Delete this photo?")) return;
-                                await deleteFractionPhoto({
-                                  fraction_photo_id: photo.id,
-                                  storage_path: photo.storage_path,
-                                });
+                        })()}
+                        {!!user && (
+                          <>
+                            <UpdateFractionDialog
+                              fraction={{
+                                id: f.id,
+                                fraction_type: f.fraction_type,
+                                codename: f.codename,
+                                amount_weight: f.amount_weight,
+                                reuse_potential: f.reuse_potential,
+                                description: f.description,
                               }}
-                              className="w-4 h-4 -ml-3 -mt-10 inline-flex items-center justify-center rounded border border-border bg-primary-foreground hover:bg-red-50 hover:border-red-300"
-                              aria-label="Delete fraction photo"
-                              title="Delete"
+                            />
+                            <Button
+                              variant={"outline"}
+                              type="button"
+                              size={"icon"}
+                              className="ml-2"
+                              onClick={async () => {
+                                if (!confirm("Видалити фракцію?")) return;
+                                await deleteFraction(f.id);
+                              }}
                             >
-                              <X className="w-4 h-4" />
-                            </button>
+                              <Delete />
+                            </Button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                    {/* Description sub-row */}
+                    {f.description?.trim?.() && (
+                      <tr key={`${f.id}-desc`} className="border-border/50">
+                        <td colSpan={5} className="px-3 pb-3 pt-0">
+                          <div className="text-xs text-muted-foreground bg-muted/10 p-2 border">
+                            {f.description?.trim?.() ? (
+                              <span className="whitespace-pre-wrap">
+                                {f.description}
+                              </span>
+                            ) : (
+                              <span className="italic">—</span>
+                            )}
                           </div>
-                        );
-                      })()}
-                      {!!user && (
-                        <Button
-                          variant={"outline"}
-                          type="button"
-                          size={"icon"}
-                          className="ml-2"
-                          onClick={async () => {
-                            if (!confirm("Видалити фракцію?")) return;
-                            await deleteFraction(f.id);
-                          }}
-                        >
-                          <Delete />
-                        </Button>
-                      )}
-                    </td>
-                  </tr>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 ))}
               </tbody>
             </table>
